@@ -15,7 +15,7 @@ config :nerves, :firmware, rootfs_overlay: "rootfs_overlay"
 # involved with firmware updates.
 
 config :shoehorn,
-  init: [:nerves_runtime],
+  init: [:nerves_init_gadget, :nerves_runtime],
   app: Mix.Project.config()[:app]
 
 # Use Ringlogger as the logger backend and remove :console.
@@ -29,3 +29,26 @@ config :logger, backends: [RingLogger]
 # Uncomment to use target specific configurations
 
 # import_config "#{Mix.Project.config[:target]}.exs"
+
+config :nerves_firmware_ssh,
+  authorized_keys: [
+    File.read!(Path.join(System.user_home!(), ".ssh/id_rsa.pub"))
+  ]
+
+config :logger, backends: [RingLogger]
+
+config :nerves_init_gadget,
+  ifname: "wlan0",
+  address_method: :dhcp,
+  mdns_domain: "lights.local",
+  node_name: "lights",
+  node_host: :mdns_domain,
+  ssh_console_port: 22
+
+key_mgmt = System.get_env("NERVES_NETWORK_KEY_MGMT") || "WPA-PSK"
+config :nerves_network, :default,
+  wlan0: [
+    ssid: System.get_env("NERVES_NETWORK_SSID"),
+    psk: System.get_env("NERVES_NETWORK_PSK"),
+    key_mgmt: String.to_atom(key_mgmt)
+  ]
