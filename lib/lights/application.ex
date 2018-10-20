@@ -8,6 +8,7 @@ defmodule Lights.Application do
     children = [
       {Nerves.Neopixel, [pin: 18, count: 60]},
       {Lights.Bounce, nil},
+      {Lights.Buttons, nil},
     ]
     Supervisor.start_link(children, opts)
   end
