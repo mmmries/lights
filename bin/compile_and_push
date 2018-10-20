@@ -1,2 +1,0 @@
-source bin/.sensitive
-mix do firmware, firmware.push lights.local

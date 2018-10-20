@@ -50,7 +50,6 @@ defmodule Lights.MixProject do
   defp deps(target) do
     [
       {:elixir_ale, "~> 1.1"},
-      {:nerves_init_gadget, "~> 0.5"},
       {:nerves_neopixel, "~> 0.4"},
       {:nerves_runtime, "~> 0.6"}
     ] ++ system(target)
