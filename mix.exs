@@ -12,6 +12,7 @@ defmodule Lights.MixProject do
       archives: [nerves_bootstrap: "~> 1.0"],
       deps_path: "deps/#{@target}",
       build_path: "_build/#{@target}",
+      elixirc_paths: elixirc_paths(@target),
       lockfile: "mix.lock.#{@target}",
       start_permanent: Mix.env() == :prod,
       build_embedded: @target != "host",
@@ -54,6 +55,9 @@ defmodule Lights.MixProject do
       {:nerves_runtime, "~> 0.6"}
     ] ++ system(target)
   end
+
+  defp elixirc_paths("host"), do: ["lib"]
+  defp elixirc_paths(_),      do: ["lib","device_lib"]
 
   defp system("rpi"), do: [{:nerves_system_rpi, "~> 1.0", runtime: false}]
   defp system("rpi0"), do: [{:nerves_system_rpi0, "~> 1.0", runtime: false}]
