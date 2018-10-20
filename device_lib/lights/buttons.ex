@@ -15,7 +15,7 @@ defmodule Lights.Buttons do
   end
 
   def handle_info({:gpio_interrupt, @direction_pin, _event}, state) do
-    :ok = Lights.Bounce.change_direction()
+    :ok = Lights.Painter.change_direction()
     {:noreply, state}
   end
 end

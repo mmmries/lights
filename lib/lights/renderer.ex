@@ -3,9 +3,9 @@ defmodule Lights.Renderer do
   Turns a %Lights.Strand{} struct into a tuple of {intensity, pixels}
   """
 
-  alias Lights.Strand
+  alias Lights.Bounce
 
-  def render(%Strand{which_pixel: which, intensity: intensity}) do
+  def render(%Bounce{which_pixel: which, intensity: intensity}) do
     {intensity, pixels(which)}
   end
 

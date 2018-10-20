@@ -1,6 +1,6 @@
-defmodule Lights.Bounce do
+defmodule Lights.Painter do
   use GenServer
-  alias Lights.{Renderer, Strand}
+  alias Lights.{Bounce, Renderer}
 
   @target Mix.Project.config()[:target]
 
@@ -12,26 +12,26 @@ defmodule Lights.Bounce do
 
   @impl GenServer
   def init(nil) do
-    state = %Strand{}
+    state = %Bounce{}
     schedule_paint(state)
     {:ok, state}
   end
 
   @impl GenServer
   def handle_call(:change_direction, _from, state) do
-    state = Strand.change_direction(state)
+    state = Bounce.change_direction(state)
     {:reply, :ok, state}
   end
 
   @impl GenServer
   def handle_info(:paint, state) do
     state |> Renderer.render() |> paint()
-    state = Strand.next(state)
+    state = Bounce.next(state)
     schedule_paint(state)
     {:noreply, state}
   end
 
-  defp schedule_paint(%Strand{render_pause: pause}) do
+  defp schedule_paint(%Bounce{render_pause: pause}) do
     Process.send_after(self(), :paint, pause)
   end
 

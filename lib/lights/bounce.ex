@@ -1,4 +1,4 @@
-defmodule Lights.Strand do
+defmodule Lights.Bounce do
   defstruct which_pixel: 0,
             direction:   :up,
             intensity:   31,
