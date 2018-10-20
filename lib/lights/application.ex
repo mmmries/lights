@@ -6,18 +6,16 @@ defmodule Lights.Application do
 
   def start(_type, _args) do
     opts = [strategy: :one_for_one, name: Lights.Supervisor]
-    children = platform_children(@target) ++ [
-      {Lights.Bounce, nil},
-    ]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link(children(@target), opts)
   end
 
-  defp platform_children("host") do
+  defp children("host") do
     []
   end
-  defp platform_children("rpi") do
+  defp children("rpi") do
     [
       {Nerves.Neopixel, [pin: 18, count: 60]},
+      {Lights.Bounce, nil},
       {Lights.Buttons, nil},
     ]
   end

@@ -1,11 +1,8 @@
 defmodule Lights.Bounce do
   use GenServer
-  alias Lights.Strand
-  alias Nerves.Neopixel
+  alias Lights.{Renderer, Strand}
 
-  @channel 0
-  @intensity 31
-  @period 33
+  @target Mix.Project.config()[:target]
 
   def start_link(nil) do
     GenServer.start_link(__MODULE__, nil, name: __MODULE__)
@@ -28,13 +25,29 @@ defmodule Lights.Bounce do
 
   @impl GenServer
   def handle_info(:paint, state) do
-    Strand.render(state)
+    state |> Renderer.render() |> paint()
     state = Strand.next(state)
     schedule_paint(state)
     {:noreply, state}
   end
 
-  defp schedule_paint(_state) do
-    Process.send_after(self(), :paint, @period)
+  defp schedule_paint(%Strand{render_pause: pause}) do
+    Process.send_after(self(), :paint, pause)
+  end
+
+  if @target == "host" do
+    defp paint({_intensity, pixels}) do
+      strs = Enum.map(pixels, fn
+        ({0, 0, 0}) -> " "
+        (_pixel)    -> "X"
+      end)
+      IO.write(["\r" | strs])
+    end
+  else
+    alias Nerves.Neopixel
+    @channel 0
+    defp paint({intensity, pixels}) do
+      Neopixel.render(@channel, {intensity, pixels})
+    end
   end
 end
