@@ -1,15 +1,24 @@
 defmodule Lights.Application do
-  @moduledoc false
-
   use Application
+
+  @moduledoc false
+  @target Mix.Project.config()[:target]
 
   def start(_type, _args) do
     opts = [strategy: :one_for_one, name: Lights.Supervisor]
-    children = [
-      {Nerves.Neopixel, [pin: 18, count: 60]},
+    children = platform_children(@target) ++ [
       {Lights.Bounce, nil},
-      {Lights.Buttons, nil},
     ]
     Supervisor.start_link(children, opts)
+  end
+
+  defp platform_children("host") do
+    []
+  end
+  defp platform_children("rpi") do
+    [
+      {Nerves.Neopixel, [pin: 18, count: 60]},
+      {Lights.Buttons, nil},
+    ]
   end
 end

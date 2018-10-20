@@ -5,7 +5,7 @@ defmodule Lights.Bounce do
 
   @channel 0
   @intensity 31
-  @period 10
+  @period 33
 
   def start_link(nil) do
     GenServer.start_link(__MODULE__, nil, name: __MODULE__)
@@ -15,8 +15,9 @@ defmodule Lights.Bounce do
 
   @impl GenServer
   def init(nil) do
-    schedule_paint()
-    {:ok, %Strand{}}
+    state = %Strand{}
+    schedule_paint(state)
+    {:ok, state}
   end
 
   @impl GenServer
@@ -27,21 +28,13 @@ defmodule Lights.Bounce do
 
   @impl GenServer
   def handle_info(:paint, state) do
-    render(state.which_pixel)
-    schedule_paint()
-    {:noreply, Strand.next(state)}
+    Strand.render(state)
+    state = Strand.next(state)
+    schedule_paint(state)
+    {:noreply, state}
   end
 
-  def render(num) do
-    Neopixel.render(@channel, {@intensity, pixels(num)})
-    :timer.sleep(@period)
+  defp schedule_paint(_state) do
+    Process.send_after(self(), :paint, @period)
   end
-
-  defp pixels(num) do
-    {0, 0, 0}
-    |> List.duplicate(60)
-    |> List.replace_at(num, {255, 255, 255})
-  end
-
-  defp schedule_paint, do: Process.send_after(self(), :paint, @period)
 end
