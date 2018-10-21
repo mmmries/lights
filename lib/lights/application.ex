@@ -17,7 +17,7 @@ defmodule Lights.Application do
     defp children() do
       [
         {Nerves.Neopixel, [pin: 18, count: 60]},
-        {Lights.Painter, nil},
+        {Lights.Painter, %Lights.Bounce{}},
         {Lights.Buttons, nil},
       ]
     end

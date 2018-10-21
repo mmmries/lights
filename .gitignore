@@ -19,3 +19,4 @@ erl_crash.dump
 bin/.sensitive
 
 .elixir_ls
+_nerves-tmp
