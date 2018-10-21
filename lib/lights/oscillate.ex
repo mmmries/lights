@@ -29,7 +29,7 @@ defmodule Lights.Oscillate do
       %{
         pixels:    Oscillate.pixels(animation),
         intensity: 15,
-        pause:     90,
+        pause:     150,
       }
     end
 
