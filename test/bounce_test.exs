@@ -3,12 +3,12 @@ defmodule Lights.BounceTest do
   alias Lights.{Animation,Bounce}
 
   test "it starts out on the first pixel" do
-    bounce = %Bounce{}
+    bounce = Bounce.new()
     assert bounce == %Bounce{which_pixel: 0, direction: :up}
   end
 
   test "it moves up" do
-    bounce = %Bounce{} |> Animation.next()
+    bounce = Bounce.new() |> Animation.next()
     assert bounce == %Bounce{which_pixel: 1, direction: :up}
   end
 
@@ -38,5 +38,17 @@ defmodule Lights.BounceTest do
     assert Enum.count(rest) == 59
     assert first == {255, 255, 255}
     assert Enum.all?(rest, &(&1 == {0, 0, 0}))
+  end
+
+  test "it can change colors" do
+    first = Bounce.new()
+    second = Animation.change_color(first)
+    assert first.color != second.color
+  end
+
+  test "it can toggle" do
+    first = Bounce.new()
+    second = Animation.toggle(first)
+    assert first.direction != second.direction
   end
 end
