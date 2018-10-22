@@ -2,7 +2,7 @@ defmodule Lights.Painter do
   use GenServer
   alias Lights.Animation
 
-  @animations [Lights.Bounce, Lights.Oscillate]
+  @animations [Lights.Bounce, Lights.Oscillate, Lights.Pause]
   @target Mix.Project.config()[:target]
 
   def start_link(animation) do
