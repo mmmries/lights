@@ -2,13 +2,13 @@ defmodule Lights.OscillateTest do
   use ExUnit.Case, async: true
   alias Lights.{Animation,Oscillate}
 
-  test "it starts out on the first pixel" do
-    oscillate = %Oscillate{}
+  test "it starts out on the even pixels" do
+    oscillate = Oscillate.new()
     assert oscillate == %Oscillate{which: :evens, color: {255, 0, 0}}
   end
 
   test "it switches to the other set" do
-    oscillate = %Oscillate{} |> Animation.next()
+    oscillate = Oscillate.new() |> Animation.next()
     assert oscillate == %Oscillate{which: :odds, color: {255, 0, 0}}
   end
 
@@ -40,11 +40,14 @@ defmodule Lights.OscillateTest do
 
   test "it changes color" do
     oscillate = %Oscillate{color: {255, 0, 0}}
-    oscillate = Oscillate.change_color(oscillate)
+    oscillate = Animation.change_color(oscillate)
     assert oscillate.color == {0, 255, 0}
-    oscillate = Oscillate.change_color(oscillate)
-    assert oscillate.color == {0, 0, 255}
-    oscillate = Oscillate.change_color(oscillate)
-    assert oscillate.color == {255, 0, 0}
+  end
+
+  test "toggles change the render timing" do
+    oscillate = Oscillate.new()
+    assert %{pause: 150} = Animation.render(oscillate)
+    oscillate = Animation.toggle(oscillate)
+    assert %{pause: 100} = Animation.render(oscillate)
   end
 end
