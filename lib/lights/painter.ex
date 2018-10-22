@@ -2,13 +2,18 @@ defmodule Lights.Painter do
   use GenServer
   alias Lights.Animation
 
+  @animations [Lights.Bounce, Lights.Oscillate]
   @target Mix.Project.config()[:target]
 
-  def start_link(animation) do
-    GenServer.start_link(__MODULE__, animation, name: __MODULE__)
+  def start_link(nil) do
+    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
-  def change_direction(), do: GenServer.call(__MODULE__, :change_direction)
+  def change_animation(), do: GenServer.call(__MODULE__, :change_animation)
+
+  def change_color(), do: GenServer.call(__MODULE__, :change_color)
+
+  def toggle(), do: GenServer.call(__MODULE__, :toggle)
 
   @impl GenServer
   def init(animation) do
@@ -17,8 +22,20 @@ defmodule Lights.Painter do
   end
 
   @impl GenServer
-  def handle_call(:change_direction, _from, animation) do
-    animation = Animation.change_direction(animation)
+  def handle_call(:change_animation, _from, animation) do
+    current_type = Map.get(animation, :__struct__)
+    current_index = Enum.find_index(@animations, fn(candidate) -> candidate == current_type end)
+    next_index = rem(current_index + 1, Enum.count(@animations))
+    next_type = Enum.at(@animations, next_index)
+    animation = apply(next_type, :new, [])
+    {:reply, :ok, animation}
+  end
+  def handle_call(:change_color, _from, animation) do
+    animation = Animation.change_color(animation)
+    {:reply, :ok, animation}
+  end
+  def handle_call(:toggle, _from, animation) do
+    animation = Animation.toggle(animation)
     {:reply, :ok, animation}
   end
 
