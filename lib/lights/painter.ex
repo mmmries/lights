@@ -5,8 +5,8 @@ defmodule Lights.Painter do
   @animations [Lights.Bounce, Lights.Oscillate]
   @target Mix.Project.config()[:target]
 
-  def start_link(nil) do
-    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
+  def start_link(animation) do
+    GenServer.start_link(__MODULE__, animation, name: __MODULE__)
   end
 
   def change_animation(), do: GenServer.call(__MODULE__, :change_animation)
