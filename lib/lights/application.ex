@@ -19,6 +19,7 @@ defmodule Lights.Application do
         {Nerves.Neopixel, [pin: 18, count: 60]},
         {Lights.Painter, %Lights.Bounce{}},
         {Lights.Buttons, nil},
+        {Lights.Temperature, nil},
       ]
     end
   end
