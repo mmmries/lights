@@ -13,43 +13,59 @@ defmodule Lights.Painter do
 
   def change_color(), do: GenServer.call(__MODULE__, :change_color)
 
+  def temperature(temperature), do: GenServer.call(__MODULE__, {:temperature, temperature})
+
   def toggle(), do: GenServer.call(__MODULE__, :toggle)
+
+  def temperature_to_intensity(temperature) do
+    cond do
+      temperature <= 20.0 -> 15
+      temperature >= 30.0 -> 255
+      true ->
+        ratio = (temperature - 20.0) / 10.0
+        trunc(240 * ratio) + 15
+    end
+  end
 
   @impl GenServer
   def init(animation) do
     send self(), :paint
-    {:ok, animation}
+    state = %{intensity: 15, animation: animation}
+    {:ok, state}
   end
 
   @impl GenServer
-  def handle_call(:change_animation, _from, animation) do
+  def handle_call(:change_animation, _from, %{animation: animation}=state) do
     current_type = Map.get(animation, :__struct__)
     current_index = Enum.find_index(@animations, fn(candidate) -> candidate == current_type end)
     next_index = rem(current_index + 1, Enum.count(@animations))
     next_type = Enum.at(@animations, next_index)
     animation = apply(next_type, :new, [])
-    {:reply, :ok, animation}
+    {:reply, :ok, %{state | animation: animation}}
   end
-  def handle_call(:change_color, _from, animation) do
+  def handle_call(:change_color, _from, %{animation: animation}=state) do
     animation = Animation.change_color(animation)
-    {:reply, :ok, animation}
+    {:reply, :ok, %{state | animation: animation}}
   end
-  def handle_call(:toggle, _from, animation) do
-    animation = Animation.toggle(animation)
-    {:reply, :ok, animation}
+  def handle_call({:temperature, temperature}, _from, state) do
+    intensity = temperature_to_intensity(temperature)
+    {:reply, :ok, %{state | intensity: intensity}}
+  end
+  def handle_call(:toggle, _from, state) do
+    animation = Animation.toggle(state.animation)
+    {:reply, :ok, %{state | animation: animation}}
   end
 
   @impl GenServer
-  def handle_info(:paint, animation) do
+  def handle_info(:paint, state) do
     %{
       pixels: pixels,
       pause: pause,
-      intensity: intensity,
-    } = Animation.render(animation)
-    paint({intensity, pixels})
+    } = Animation.render(state.animation)
+    paint({state.intensity, pixels})
     schedule_paint(pause)
-    animation = Animation.next(animation)
-    {:noreply, animation}
+    animation = Animation.next(state.animation)
+    {:noreply, %{state | animation: animation}}
   end
 
   defp schedule_paint(pause) do
