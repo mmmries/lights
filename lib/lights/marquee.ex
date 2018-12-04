@@ -10,7 +10,10 @@ defmodule Lights.Marquee do
   end
 
   def message_to_pixels(message) do
-    message_to_pixels(message, [[],[],[],[],[]])
+    # padding the message with spaces produces an effect where the
+    # letters scroll onto the screen and then off at the end before
+    # resetting
+    message_to_pixels("  "<>message<>"  ", [[],[],[],[],[]])
   end
 
   defp message_to_pixels(<<>>, pixels), do: pixels
