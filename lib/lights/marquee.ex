@@ -1,12 +1,15 @@
 defmodule Lights.Marquee do
-  defstruct offset: 0,
-            pause: 200,
-            pixels: [[],[],[],[],[]]
+  defstruct color:      {255, 255, 255},
+            max_offset: 0,
+            offset:     0,
+            pause:      200,
+            pixels:     [[],[],[],[],[]]
 
   def new(opts) do
     message = Keyword.fetch!(opts, :message)
     pixels = message_to_pixels(message)
-    %__MODULE__{pixels: pixels}
+    max_offset = (pixels |> Enum.at(0) |> length()) - 12
+    %__MODULE__{max_offset: max_offset, pixels: pixels}
   end
 
   def message_to_pixels(message) do
@@ -26,5 +29,56 @@ defmodule Lights.Marquee do
         line ++ Enum.at(new_pixels, index)
       end)
     message_to_pixels(rest, pixels)
+  end
+
+  defimpl Lights.Animation do
+    alias Lights.Marquee
+
+    @colors [
+      {255, 0, 0},
+      {0, 255, 0},
+      {0, 0, 255},
+      {255, 255, 255},
+    ]
+
+    @pauses [
+      200,
+      150,
+      100,
+      50,
+    ]
+
+    def next(%Marquee{max_offset: max, offset: offset}=marquee) when offset > max do
+      %{marquee | offset: 0}
+    end
+    def next(%Marquee{offset: offset}=marquee) do
+      %{marquee | offset: offset + 1}
+    end
+
+    def render(%Marquee{}=marquee) do
+      pixels =
+        marquee.pixels
+        |> Enum.reduce([], fn(row, list) ->
+          list ++ Enum.slice(row, marquee.offset, 12)
+        end)
+        |> Enum.map(fn
+          (1) -> marquee.color
+          (0) -> {0, 0, 0}
+        end)
+
+      %{
+        pixels:    pixels,
+        intensity: 15,
+        pause:     marquee.pause,
+      }
+    end
+
+    def change_color(%Marquee{}=marquee) do
+      %{ marquee | color: Lights.Wrap.next(@colors, marquee.color) }
+    end
+
+    def toggle(%Marquee{}=marquee) do
+      %{ marquee | pause: Lights.Wrap.next(@pauses, marquee.pause) }
+    end
   end
 end
