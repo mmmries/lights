@@ -68,7 +68,7 @@ defmodule Lights.Marquee do
 
       %{
         pixels:    pixels,
-        intensity: 15,
+        intensity: 9,
         pause:     marquee.pause,
       }
     end

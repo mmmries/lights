@@ -19,25 +19,13 @@ defmodule Lights.Painter do
 
   def change_color(), do: GenServer.call(__MODULE__, :change_color)
 
-  def temperature(temperature), do: GenServer.call(__MODULE__, {:temperature, temperature})
-
   def toggle(), do: GenServer.call(__MODULE__, :toggle)
-
-  def temperature_to_intensity(temperature) do
-    cond do
-      temperature <= 20.0 -> 15
-      temperature >= 30.0 -> 255
-      true ->
-        ratio = (temperature - 20.0) / 10.0
-        trunc(240 * ratio) + 15
-    end
-  end
 
   @impl GenServer
   def init(nil) do
     send self(), :paint
     animation = Lights.Wrap.next(@animations, nil)
-    state = %{intensity: 15, animation: animation, current: animation}
+    state = %{animation: animation, current: animation}
     {:ok, state}
   end
 
@@ -50,10 +38,6 @@ defmodule Lights.Painter do
     animation = Animation.change_color(animation)
     {:reply, :ok, %{state | current: animation}}
   end
-  def handle_call({:temperature, temperature}, _from, state) do
-    intensity = temperature_to_intensity(temperature)
-    {:reply, :ok, %{state | intensity: intensity}}
-  end
   def handle_call(:toggle, _from, state) do
     animation = Animation.toggle(state.current)
     {:reply, :ok, %{state | current: animation}}
@@ -62,10 +46,11 @@ defmodule Lights.Painter do
   @impl GenServer
   def handle_info(:paint, state) do
     %{
+      intensity: intensity,
       pixels: pixels,
       pause: pause,
     } = Animation.render(state.current)
-    paint({state.intensity, pixels})
+    paint({intensity, pixels})
     schedule_paint(pause)
     animation = Animation.next(state.current)
     {:noreply, %{state | current: animation}}
