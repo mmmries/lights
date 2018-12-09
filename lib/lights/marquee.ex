@@ -8,7 +8,7 @@ defmodule Lights.Marquee do
   def new(opts) do
     message = Keyword.fetch!(opts, :message)
     pixels = message_to_pixels(message)
-    max_offset = (pixels |> Enum.at(0) |> length()) - 12
+    max_offset = (pixels |> Enum.at(0) |> length()) - 32
     %__MODULE__{max_offset: max_offset, pixels: pixels}
   end
 
@@ -16,7 +16,7 @@ defmodule Lights.Marquee do
     # padding the message with spaces produces an effect where the
     # letters scroll onto the screen and then off at the end before
     # resetting
-    message_to_pixels("  "<>message<>"  ", [[],[],[],[],[]])
+    message_to_pixels("        "<>message<>"        ", [[],[],[],[],[],[],[],[]])
   end
 
   defp message_to_pixels(<<>>, pixels), do: pixels
