@@ -8,6 +8,7 @@ defmodule Lights.Painter do
     Lights.Pause.new(),
     Lights.Marquee.new(message: "MMMRIES"),
     Lights.Marquee.new(message: "HI UTAH ELIXIR"),
+    Lights.Marquee.new(message: "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z"),
   ]
   @target Mix.Project.config()[:target]
 
