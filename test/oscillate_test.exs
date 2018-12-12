@@ -19,8 +19,8 @@ defmodule Lights.OscillateTest do
       intensity: intensity,
     } = Animation.render(%Oscillate{which: :evens})
     assert pause == 150
-    assert intensity == 15
-    assert Enum.count(rest) == 58
+    assert intensity == 10
+    assert Enum.count([first, second | rest]) == 256
     assert first == {255, 0, 0}
     assert second == {0, 0, 0}
   end
@@ -32,8 +32,8 @@ defmodule Lights.OscillateTest do
       intensity: intensity,
     } = Animation.render(%Oscillate{which: :odds, color: {0, 255, 0}})
     assert pause == 150
-    assert intensity == 15
-    assert Enum.count(rest) == 58
+    assert intensity == 10
+    assert Enum.count(rest) == 254
     assert first == {0, 0, 0}
     assert second == {0, 255, 0}
   end

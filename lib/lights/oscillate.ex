@@ -8,10 +8,10 @@ defmodule Lights.Oscillate do
   def new, do: %__MODULE__{}
 
   def pixels(%__MODULE__{which: :evens, color: color}) do
-    [color, {0, 0, 0}] |> List.duplicate(30) |> List.flatten
+    [color, {0, 0, 0}] |> List.duplicate(128) |> List.flatten
   end
   def pixels(%__MODULE__{which: :odds, color: color}) do
-    [{0, 0, 0}, color] |> List.duplicate(30) |> List.flatten
+    [{0, 0, 0}, color] |> List.duplicate(128) |> List.flatten
   end
 
   defimpl Lights.Animation do
@@ -37,7 +37,7 @@ defmodule Lights.Oscillate do
     def render(%Oscillate{pause: pause}=animation) do
       %{
         pixels:    Oscillate.pixels(animation),
-        intensity: 15,
+        intensity: 10,
         pause:     pause,
       }
     end

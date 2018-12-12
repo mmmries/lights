@@ -13,8 +13,8 @@ defmodule Lights.BounceTest do
   end
 
   test "it bounces off the top end of the strip" do
-    bounce = %Bounce{which_pixel: 59, direction: :up} |> Animation.next()
-    assert bounce == %Bounce{which_pixel: 58, direction: :down}
+    bounce = %Bounce{which_pixel: 255, direction: :up} |> Animation.next()
+    assert bounce == %Bounce{which_pixel: 254, direction: :down}
   end
 
   test "it moves down" do
@@ -35,7 +35,7 @@ defmodule Lights.BounceTest do
     } = Animation.render(%Bounce{})
     assert pause == 30
     assert intensity == 15
-    assert Enum.count(rest) == 59
+    assert Enum.count(rest) == 255
     assert first == {255, 255, 255}
     assert Enum.all?(rest, &(&1 == {0, 0, 0}))
   end

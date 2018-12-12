@@ -48,6 +48,8 @@ defmodule Lights.Marquee do
       50,
     ]
 
+    @matrix_width 32
+
     def next(%Marquee{max_offset: max, offset: offset}=marquee) when offset > max do
       %{marquee | offset: 0}
     end
@@ -58,9 +60,11 @@ defmodule Lights.Marquee do
     def render(%Marquee{}=marquee) do
       pixels =
         marquee.pixels
-        |> Enum.reduce([], fn(row, list) ->
-          list ++ Enum.slice(row, marquee.offset, 12)
+        |> Enum.map(fn(row) ->
+          Enum.slice(row, marquee.offset, @matrix_width)
         end)
+        |> transpose()
+        |> List.flatten()
         |> Enum.map(fn
           (1) -> marquee.color
           (0) -> {0, 0, 0}
@@ -71,6 +75,12 @@ defmodule Lights.Marquee do
         intensity: 9,
         pause:     marquee.pause,
       }
+    end
+
+    def transpose([]), do: []
+    def transpose([[]|_]), do: []
+    def transpose(a) do
+      [Enum.map(a, &hd/1) | transpose(Enum.map(a, &tl/1))]
     end
 
     def change_color(%Marquee{}=marquee) do
