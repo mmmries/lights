@@ -5,12 +5,6 @@ defmodule Lights.Bounce do
 
   def new, do: %__MODULE__{}
 
-  def pixels(%__MODULE__{which_pixel: which, color: color}) do
-    {0, 0, 0}
-    |> List.duplicate(60)
-    |> List.replace_at(which, color)
-  end
-
   defimpl Lights.Animation do
     alias Lights.Bounce
 
@@ -21,8 +15,10 @@ defmodule Lights.Bounce do
       {0, 0, 255},
     ]
 
-    def next(%Bounce{which_pixel: 59, direction: :up}=state) do
-      %{ state | which_pixel: 58, direction: :down }
+    @max 255
+
+    def next(%Bounce{which_pixel: @max, direction: :up}=state) do
+      %{ state | which_pixel: @max - 1, direction: :down }
     end
     def next(%Bounce{which_pixel: p, direction: :up}=state) do
       %{ state | which_pixel: p + 1 }
@@ -36,7 +32,7 @@ defmodule Lights.Bounce do
 
     def render(%Bounce{}=bounce) do
       %{
-        pixels:    Bounce.pixels(bounce),
+        pixels:    pixels(bounce),
         intensity: 15,
         pause:     30,
       }
@@ -51,6 +47,12 @@ defmodule Lights.Bounce do
 
     def change_color(%Bounce{color: color}=state) do
       %{ state | color: Lights.Wrap.next(@colors, color) }
+    end
+
+    defp pixels(%Bounce{which_pixel: which, color: color}) do
+      {0, 0, 0}
+      |> List.duplicate(@max + 1)
+      |> List.replace_at(which, color)
     end
   end
 end

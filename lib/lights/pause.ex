@@ -11,7 +11,7 @@ defmodule Lights.Pause do
     def next(%Pause{}=pause), do: pause
     def render(%Pause{pause: pause}) do
       %{
-        pixels: List.duplicate({0,0,0}, 60),
+        pixels: List.duplicate({0,0,0}, 256),
         intensity: 0,
         pause: pause,
       }
