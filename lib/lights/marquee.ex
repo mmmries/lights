@@ -64,6 +64,14 @@ defmodule Lights.Marquee do
           Enum.slice(row, marquee.offset, @matrix_width)
         end)
         |> transpose()
+        |> Enum.with_index()
+        |> Enum.map(fn({column, index}) ->
+          if rem(index, 2) == 1 do
+            Enum.reverse(column)
+          else
+            column
+          end
+        end)
         |> List.flatten()
         |> Enum.map(fn
           (1) -> marquee.color
