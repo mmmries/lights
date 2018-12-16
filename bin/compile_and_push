@@ -1,0 +1,3 @@
+source bin/.sensitive
+mix do deps.get, firmware
+bin/upload.sh lights.local
