@@ -51,8 +51,8 @@ defmodule Lights.MixProject do
   defp deps(target) do
     [
       {:elixir_ale, "~> 1.1"},
-      #{:nerves_neopixel, "~> 0.4"},
-      {:nerves_neopixel, path: "../nerves_neopixel"},
+      {:blinkchain, "~> 1.0.0-rc0"},
+      {:nerves_init_gadget, "~> 0.5.2"},
       {:nerves_runtime, "~> 0.6"}
     ] ++ system(target)
   end
