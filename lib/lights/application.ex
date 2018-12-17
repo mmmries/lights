@@ -16,9 +16,8 @@ defmodule Lights.Application do
   else
     defp children() do
       [
-        #{Nerves.Neopixel, [pin: 18, count: 8 * 32]},
-        #{Lights.Painter, nil},
-        #{Lights.Buttons, nil},
+        {Lights.Painter, nil},
+        {Lights.Buttons, nil},
       ]
     end
   end
