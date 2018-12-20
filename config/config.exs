@@ -15,7 +15,7 @@ config :nerves, :firmware, rootfs_overlay: "rootfs_overlay"
 # involved with firmware updates.
 
 config :shoehorn,
-  init: [:nerves_runtime, :lights],
+  init: [:nerves_runtime, :nerves_init_gadget],
   app: Mix.Project.config()[:app]
 
 # Use Ringlogger as the logger backend and remove :console.
@@ -41,7 +41,7 @@ config :blinkchain, :channel0,
     }
   ]
 
-  config :nerves_firmware_ssh,
+config :nerves_firmware_ssh,
   authorized_keys: [
     File.read!(Path.join(System.user_home!(), ".ssh/id_rsa.pub"))
   ]
