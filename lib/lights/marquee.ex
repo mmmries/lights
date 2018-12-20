@@ -65,7 +65,6 @@ defmodule Lights.Marquee do
       %{marquee | offset: offset + 1}
     end
 
-    @spec render(Lights.Marquee.t()) :: %{pause: any(), pixels: [any()]}
     def render(%Marquee{}=marquee) do
       pixels =
         marquee.pixels
@@ -83,12 +82,6 @@ defmodule Lights.Marquee do
         pixels:    pixels,
         pause:     marquee.pause,
       }
-    end
-
-    def transpose([]), do: []
-    def transpose([[]|_]), do: []
-    def transpose(a) do
-      [Enum.map(a, &hd/1) | transpose(Enum.map(a, &tl/1))]
     end
 
     def change_color(%Marquee{}=marquee) do
