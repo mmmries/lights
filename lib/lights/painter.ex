@@ -3,9 +3,6 @@ defmodule Lights.Painter do
   alias Lights.Animation
 
   @animations [
-    Lights.Bounce.new(),
-    Lights.Oscillate.new(),
-    Lights.Pause.new(),
     Lights.Marquee.new(message: "MMMRIES"),
     Lights.Marquee.new(message: "HI UTAH ELIXIR"),
     Lights.Marquee.new(message: "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z"),
@@ -47,11 +44,10 @@ defmodule Lights.Painter do
   @impl GenServer
   def handle_info(:paint, state) do
     %{
-      intensity: intensity,
       pixels: pixels,
       pause: pause,
     } = Animation.render(state.current)
-    paint({intensity, pixels})
+    paint(pixels)
     schedule_paint(pause)
     animation = Animation.next(state.current)
     {:noreply, %{state | current: animation}}
@@ -62,17 +58,26 @@ defmodule Lights.Painter do
   end
 
   if @target == "host" do
-    defp paint({_intensity, pixels}) do
-      strs = Enum.map(pixels, fn
-        ({0, 0, 0}) -> " "
-        (_pixel)    -> "X"
+    @spec paint(Lights.Animation.matrix()) :: :ok
+    defp paint(pixels) do
+      Enum.each(pixels, fn(row) ->
+        Enum.each(row, fn
+          ({0,0,0}) -> IO.write(" ")
+          (_color) -> IO.write("X")
+        end)
+        IO.write("\r\n")
       end)
-      IO.write(["\r" | strs])
+      List.duplicate("\r\n", 5) |> IO.write()
     end
   else
-    @channel 0
-    defp paint({intensity, pixels}) do
-      Nerves.Neopixel.render(@channel, {intensity, pixels})
+    @spec paint(Lights.Animation.matrix) :: :ok
+    defp paint(pixels) do
+      pixels |> Enum.with_index() |> Enum.each(fn({row, row_num}) ->
+        row |> Enum.with_index() |> Enum.each(fn({color, col_num}) ->
+          Blinkchain.set_pixel(%Blinkchain.Point{x: col_num, y: row_num}, color)
+        end)
+      end)
+      Blinkchain.render()
     end
   end
 end

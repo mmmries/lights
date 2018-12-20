@@ -1,5 +1,6 @@
 defprotocol Lights.Animation do
   @type pixel :: {byte(), byte(), byte()}
+  @type matrix :: [[pixel()]]
 
   @doc """
   This function computes the next state of the animation.
@@ -12,7 +13,7 @@ defprotocol Lights.Animation do
   an intensity between 0..255 and an animation pause between 0..1000 for
   how many milliseconds to wait before the next render
   """
-  @spec render(struct()) :: %{pixels: [pixel()], intensity: byte(), pause: 0..1000}
+  @spec render(struct()) :: %{pixels: [[pixel()]], pause: 0..1000}
   def render(animation)
 
   @doc """

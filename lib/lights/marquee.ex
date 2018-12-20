@@ -5,6 +5,14 @@ defmodule Lights.Marquee do
             pause:      200,
             pixels:     [[],[],[],[],[]]
 
+  @type t :: %__MODULE__{
+    color: Animation.pixel,
+    max_offset: non_neg_integer(),
+    offset: non_neg_integer(),
+    pause: 0..1000,
+    pixels: Animation.matrix(),
+  }
+
   def new(opts) do
     message = Keyword.fetch!(opts, :message)
     pixels = message_to_pixels(message)
@@ -57,30 +65,22 @@ defmodule Lights.Marquee do
       %{marquee | offset: offset + 1}
     end
 
+    @spec render(Lights.Marquee.t()) :: %{pause: any(), pixels: [any()]}
     def render(%Marquee{}=marquee) do
       pixels =
         marquee.pixels
         |> Enum.map(fn(row) ->
           Enum.slice(row, marquee.offset, @matrix_width)
         end)
-        |> transpose()
-        |> Enum.with_index()
-        |> Enum.map(fn({column, index}) ->
-          if rem(index, 2) == 1 do
-            Enum.reverse(column)
-          else
-            column
-          end
-        end)
-        |> List.flatten()
-        |> Enum.map(fn
-          (1) -> marquee.color
-          (0) -> {0, 0, 0}
+        |> Enum.map(fn(row) ->
+          Enum.map(row, fn
+            (1) -> marquee.color
+            (0) -> {0, 0, 0}
+          end)
         end)
 
       %{
         pixels:    pixels,
-        intensity: 9,
         pause:     marquee.pause,
       }
     end

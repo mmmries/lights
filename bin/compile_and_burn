@@ -1,1 +1,2 @@
-MIX_TARGET=rpi mix do deps.get, firmware, firmware.burn
+source bin/.sensitive
+mix do deps.get, firmware, firmware.burn
